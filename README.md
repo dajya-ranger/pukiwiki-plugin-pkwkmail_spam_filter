@@ -1,0 +1,2 @@
+# pukiwiki-plugin-pkwkmail_spam_filter
+PukiWikiスパムフィルタ対応メールフォームプラグイン
