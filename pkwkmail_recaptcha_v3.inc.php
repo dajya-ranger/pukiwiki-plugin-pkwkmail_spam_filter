@@ -20,8 +20,11 @@
  * 修正者：オヤジ戦隊ダジャレンジャー(Twitter:@dajya_ranger_)
  * サイト：SEの良心（https://dajya-ranger.com/）
  *
- * Version 0.1.0
- * Update  2019/06/01
+ * 修正歴：2019/09/26 ページが凍結されていないMSG文言修正＋センタリング
+ * 　　　　2019/09/26 フォームの表をセンタリング
+ *
+ * Version 0.1.1
+ * Update  2019/09/26
  *
  */
 
@@ -70,7 +73,7 @@ function plugin_pkwkmail_init()
 		'send_err'				=> _("なんらかのエラーが発生したため、自動返信できませんでした。"),
 		'finish_message'			=> _("以下の通りメールを送信しました。~\nしかるべき反応がない場合は、システム不具合など理由でメールが届いていない可能性があります。お手数ですが、別の手段でお問い合わせください。"),
 		'finish_message_return'		=> _("トップページへもどる"),
-		'freeze_notification'		=> _("ページ凍結されていません。危険なので、ページを凍結してください。"),
+		'freeze_notification'		=> _("ページが凍結されていません。危険なので、ページを凍結してください。"),
 		'not_use'					=> _("このプラグインを使用するためには、ページを凍結して下さい。"),
 		'err_msg_notify_to'		=> _("管理者宛メールアドレス(\$notify_to)を正しく設定して下さい。"),
 		'fmt_date'				=> _("Y/m/d"),
@@ -404,7 +407,7 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 	}
 
 	$result_form .= '<form action="" method="POST">'."\n";
-	$result_form .= '<table class="'.PKWKMAIL_TABLE_CLASS.'">'."\n";
+	$result_form .= '<center><table class="'.PKWKMAIL_TABLE_CLASS.'">'."\n";
 	//count attr - 作表のため項目数を数えて繰り返す
 	$num_attr = count($render_title);
 
@@ -422,7 +425,7 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 		}
 		$result_form .= '</tr>'."\n";
 	}
-	$result_form .= '</table>'."\n";
+	$result_form .= '</table></center>'."\n";
 	$result_form .= '<p><input name="cnfm_chk" type="hidden" value="1" />'."\n";	// ここから　Google reCAPTCHAスクリプト
 	$result_form .= '<script src="https://www.google.com/recaptcha/api.js?render=' . SPAM_FILTER_RECAPTCHA_SITEKEY . '"></script>' . "\n";
 	$result_form .='<script>grecaptcha.ready(function() {';
@@ -444,7 +447,7 @@ function PKWKMAIL_entry($attr)
 	$entry = '';
 	//freeze notification - 凍結確認
 	if(!is_freeze($vars['page'])){
-		$entry = '<p style="border:1px #aaa solid;padding:10px;background-color:#eee;"><strong>' .$_pkwkmail_msg['freeze_notification'] . '</strong></p>';
+		$entry = '<center><p style="border:1px #aaa solid;padding:10px;background-color:#eee;"><strong>' .$_pkwkmail_msg['freeze_notification'] . '</strong></p></center>';
 	}
 	$entry .= $attr['default_message']."\n";
 	$entry .= $attr['default_explanation']."\n";
