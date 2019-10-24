@@ -14,17 +14,17 @@
  * 特に設定・変更の必要はないが「plugin」フォルダにFTP（格納）する際は
  * ファイル名を「pkwkmail.inc.php」とすること
  * pkwkmail.inc.php reCAPTCHA v3対応プラグインとの混在は想定していない
- *
  * ※PukiWiki1.5.2用spam_filter.phpスパムフィルタ Ver0.8.1の導入が前提
  *
- * 修正者：オヤジ戦隊ダジャレンジャー(Twitter:@dajya_ranger_)
- * サイト：SEの良心（https://dajya-ranger.com/）
- *
- * 修正歴：2019/09/26 ページが凍結されていないMSG文言修正＋センタリング
- * 　　　　2019/09/26 フォームの表をセンタリング
- *
- * Version 0.1.1
- * Update  2019/09/26
+ * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
+ * @copyright	Copyright © 2019, dajya-ranger.com
+ * @link		https://dajya-ranger.com/pukiwiki/setting-mail-form-recaptcha/
+ * @example		@linkの内容を参照
+ * @license		Apache License 2.0
+ * @version		0.1.1
+ * @since 		0.1.1 2019/09/26 ページが凍結されていないMSG文言修正＋センタリング
+ * @since 		0.1.1 2019/09/26 フォームの表をセンタリング
+ * @since 		0.1.0 2019/06/01 暫定初公開
  *
  */
 
