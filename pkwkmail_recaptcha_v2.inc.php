@@ -6,7 +6,7 @@
 // thx many ideas from Marijuana's InquirySP (XOOPS Module)
 // thx many advice from symly, GIJOE (through his book).
 
-/*
+/**
  * 修正情報
  *
  * PukiWiki pkwkmail.inc.php reCAPTCHA v2対応プラグイン
