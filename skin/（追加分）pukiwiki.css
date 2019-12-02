@@ -1,0 +1,43 @@
+/* pkwkmail.in.php */
+.pkwkmail_required {
+	margin: 0 0 0 0.2em;
+	padding: 3px 5px;
+	background: #f00;
+	color: #fff;
+	border-radius:5px;
+}
+.pkwkmail input[type="text"],
+.pkwkmail input[type="email"],
+.pkwkmail input[type="password"],
+.pkwkmail select,
+.pkwkmail textarea {
+	background-color: #fff;
+	color: #333;
+	width: 95%;
+	border: 1px solid #ddd;
+	font-size: 100%;
+	margin: 0.5em 0;
+	padding: 0.5em;
+	border-radius: 4px;
+	box-shadow: 1px 1px 3px rgba(0,0,0,.1) inset;
+}
+.pkwkmail input[type="radio"],
+.pkwkmail input[type="checkbox"] {
+	margin: 0.5em 0;
+}
+.pkwkmail input[type="submit"] {
+	text-align: center;
+	display: inline-block;
+    padding: 10px 40px;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    border: 1px solid #808080;
+    color: #808080;
+	background: #fff;
+	cursor: pointer;
+	transition: .2s;
+}
+.pkwkmail input[type="submit"]:hover {
+	color: #fff;
+	background: #808080;
+}

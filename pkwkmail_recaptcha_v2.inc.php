@@ -18,10 +18,13 @@
  *
  * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
  * @copyright	Copyright © 2019, dajya-ranger.com
- * @link		https://dajya-ranger.com/pukiwiki/setting-mail-form-recaptcha/
+ * @link		https://dajya-ranger.com/pukiwiki/setting-mail-form-responsive/
  * @example		@linkの内容を参照
  * @license		Apache License 2.0
- * @version		0.1.1
+ * @version		0.2.0
+ * @since		0.2.0 2019/12/02 レスポンシブデザイン対応
+ * @since		0.2.0 2019/12/02 メール送信レイアウト変更
+ * @since		0.2.0 2019/12/02 htmlspecialchars関数をhtmlsc関数に置き換え
  * @since 		0.1.1 2019/09/26 ページが凍結されていないMSG文言修正＋センタリング
  * @since 		0.1.1 2019/09/26 フォームの表をセンタリング
  * @since 		0.1.0 2019/06/01 暫定初公開
@@ -61,7 +64,7 @@ function plugin_pkwkmail_init()
 		'attr_err_title'			=> _("設定エラー"),
 		'attr_err_mes'			=> _("フォームを正しく生成できませんでした。"),
 		'attr_err_ary'			=> _("配列の形式を確認してください：%s"),
-		'must'					=> _("(必須)"),
+		'must'					=> _("必須"),
 		'button'					=> _("内容確認"),
 		'button_send'				=> _("送信する"),
 		'invalid_madrs'			=> _("「%s」の形式が不正です。"),
@@ -167,10 +170,10 @@ function PKWKMAIL_prepare( $lines )
 		case 'attr':
 			$attr['attr'][] = $tmp;
 			break;
-		//htmlspecialchars をかける値
+		//htmlsc をかける値
 		case 'contact_title_to_admin'://mail subject - メールの件名
 		case 'contact_title_to_client':
-			$attr[$v[0]] = htmlspecialchars( $tmp[0],ENT_QUOTES );
+			$attr[$v[0]] = htmlsc( $tmp[0],ENT_QUOTES );
 			break;
 		case 'admin_adrs':				// 管理者メールアドレス
 		case 'admin_reply_to':			// 管理者返信用アドレス
@@ -275,10 +278,10 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 			if( is_array( $v ) ) {
 				foreach( $v as $kk => $vv ) {
 					if(get_magic_quotes_gpc()) { $vv = stripslashes($vv); }
-					$render_value_arr[] = htmlspecialchars( $vv, ENT_QUOTES );
+					$render_value_arr[] = htmlsc( $vv, ENT_QUOTES );
 				}
 			}else{
-				if( get_magic_quotes_gpc() ) $v = htmlspecialchars( stripslashes($v),ENT_QUOTES );
+				if( get_magic_quotes_gpc() ) $v = htmlsc( stripslashes($v),ENT_QUOTES );
 			}
 			$render_value[] = $v ;
 		}
@@ -307,11 +310,11 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 	foreach($attr['attr'] as $k){
 		//must check - 必須項目チェック
 		$render_must = '';
-		if($k[2] == 1) $render_must = '<strong>'.$_pkwkmail_msg['must'].'</strong>';
+		if($k[2] == 1) $render_must = '<span class="pkwkmail_required">'.$_pkwkmail_msg['must'].'</span>';
 
 		//title - 各質問項目 - th
-		$k[0] = htmlspecialchars($k[0], ENT_QUOTES);
-		$render_title[] .= "\t".'<th><label for="PKWKMAIL_'.$attr_name[$n].'">'.str_replace('&amp;br;','<br />',$k[0]).$render_must.'</label></th>'."\n";
+		$k[0] = htmlsc($k[0], ENT_QUOTES);
+		$render_title[] .= "\t".'<p><label for="PKWKMAIL_'.$attr_name[$n].'">'.str_replace('&amp;br;','<br />',$k[0]).$render_must.'</label><br />'."\n";
 
 		//parts
 		$render_element_arr = $value_arr = array() ;
@@ -331,20 +334,20 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 		case 'text':
 		case 'email':
 		case 'password': //text,email,password
-			$render_element[] .= "\t".'<td><input id="PKWKMAIL_'.$attr_name[$n].'" name="PKWKMAIL_'.$attr_name[$n].'" type="text" value="'.$render_value[$n].'" size="'.$k[5][0].'" /></td>'."\n";
+			$render_element[] .= "\t".'<span class="pkwkmail"><input name="PKWKMAIL_'.$attr_name[$n].'" type="text" value="'.$render_value[$n].'" size="'.$k[5][0].'" class="pkwkmail" /></span><br />'."\n";
 			break;
 		case 'textarea': //textarea
-			$render_element[] .= "\t".'<td><textarea id="PKWKMAIL_'.$attr_name[$n].'" name="PKWKMAIL_'.$attr_name[$n].'" cols="'.$k[5][0].'" rows="'.$k[5][1].'">'.$render_value[$n].'</textarea></td>'."\n";
+			$render_element[] .= "\t".'<span class="pkwkmail"><textarea class="pkwkmail" name="PKWKMAIL_'.$attr_name[$n].'" cols="'.$k[5][0].'" rows="'.$k[5][1].'" class="pkwkmail">'.$render_value[$n].'</textarea></span><br /></p>'."\n";
 			break;
 		case 'option': //option
 			$render_element[$n] = array() ;
-			$render_element_arr[] .= "\t".'<td><select id="PKWKMAIL_'.$attr_name[$n].'" name="PKWKMAIL_'.$attr_name[$n].'">'."\n";
+			$render_element_arr[] .= "\t".'<span class="pkwkmail"><select class="pkwkmail" name="PKWKMAIL_'.$attr_name[$n].'">'."\n";
 			foreach($k[3] as $value_arr){
-				$value_arr = htmlspecialchars($value_arr, ENT_QUOTES);
+				$value_arr = htmlsc($value_arr, ENT_QUOTES);
 				$selected = ($value_arr == $render_value[$n]) ? ' selected="selected"' : '';
 				$render_element_arr[] .= "\t\t".'<option value="'.$value_arr.'"'.$selected.'>'.$value_arr."</option>\n";
 			}
-			$render_element_arr[] .= "\t".'</select></td>'."\n";
+			$render_element_arr[] .= "\t".'</select></span><br /></p>'."\n";
 			$render_element_arr_num = count($render_element_arr);
 			for($i=0;$i<$render_element_arr_num;++$i){
 				$render_element[$n][] .= $render_element_arr[$i];
@@ -354,14 +357,14 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 		case 'radio-br':
 			//radio
 			$render_element[$n] = array() ;
-			$render_element_arr[] .= "\t".'<td>'."\n";
+			$render_element_arr[] .= "\t\n";
 			foreach($k[3] as $value_arr){
-				$value_arr = htmlspecialchars($value_arr, ENT_QUOTES);
+				$value_arr = htmlsc($value_arr, ENT_QUOTES);
 				$checked = ($value_arr == $render_value[$n]) ? ' checked="checked"' : '';
-				$render_element_arr[] .= "\t\t".'<label><input type="radio" name="PKWKMAIL_'.$attr_name[$n].
+				$render_element_arr[] .= "\t\t".'<label><span class="pkwkmail"><input class="pkwkmail" type="radio" name="PKWKMAIL_'.$attr_name[$n].
 						'" value="'.$value_arr.'"'.$checked.'/>'.$value_arr.'</label>'.$radio_break."\n";
 			}
-			$render_element_arr[] .= "\t".'</td>'."\n";
+			$render_element_arr[] .= "\t".'</span></p>'."\n";
 			$render_element_arr_num = count($render_element_arr);
 			for($i=0;$i<$render_element_arr_num;++$i){
 				$render_element[$n][] .= $render_element_arr[$i];
@@ -371,9 +374,9 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 		case 'checkbox-br':
 			//checkbox
 			$render_element[$n] = array() ;
-			$render_element_arr[] .= "\t".'<td>'."\n";
+			$render_element_arr[] .= "\t\n";
 			foreach($k[3] as $value_arr) {
-				$value_arr = htmlspecialchars($value_arr, ENT_QUOTES);
+				$value_arr = htmlsc($value_arr, ENT_QUOTES);
 				$chked = false;
 				if( ! is_null($render_value_arr) ) {
 					foreach($render_value_arr as $render_value_arr_v) {
@@ -381,10 +384,10 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 					}
 				}
 				$checked = ($chked) ? ' checked="checked"' : '';
-				$render_element_arr[] .= "\t\t".'<label><input type="checkbox" name="PKWKMAIL_'.$attr_name[$n].
+				$render_element_arr[] .= "\t\t".'<label><span class="pkwkmail"><input class="pkwkmail" type="checkbox" name="PKWKMAIL_'.$attr_name[$n].
 					'[]" value="'.$value_arr.'"'.$checked.'/>'.$value_arr.'</label>'.$checkbox_break."\n";
 			}
-			$render_element_arr[] .= "\t".'</td>'."\n";
+			$render_element_arr[] .= "\t".'<br /></span></p>'."\n";
 			$render_element_arr_num = count($render_element_arr);
 			for($i=0;$i<$render_element_arr_num;++$i) {
 				$render_element[$n][] .= $render_element_arr[$i];
@@ -407,12 +410,12 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 	}
 
 	$result_form .= '<form action="" method="POST">'."\n";
-	$result_form .= '<center><table class="'.PKWKMAIL_TABLE_CLASS.'">'."\n";
+	$result_form .= "\n";
 	//count attr - 作表のため項目数を数えて繰り返す
 	$num_attr = count($render_title);
 
 	for($i=0;$i<$num_attr;++$i) {
-		$result_form .= '<tr>'."\n";
+		$result_form .= "\n";
 		$result_form .= $render_title[$i];
 		if(is_array($render_element[$i])) {
 			$v = 0;
@@ -423,9 +426,9 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 		} else {
 			$result_form .= $render_element[$i];
 		}
-		$result_form .= '</tr>'."\n";
+		$result_form .= "\n";
 	}
-	$result_form .= '</table></center>'."\n";
+	$result_form .= "\n";
 	$result_form .= '<p><input name="cnfm_chk" type="hidden" value="1" /></p>'."\n";
 	// ここから　Google reCAPTCHAスクリプト
 	$result_form .= '<script src=\'https://www.google.com/recaptcha/api.js\'></script>' . "\n";
@@ -435,7 +438,7 @@ function PKWKMAIL_formmaker($attr,$cnfm)
 	$result_form .='function enableBtn(code) {if(code !== ""){' . "\n";
 	$result_form .='$(\':submit[name=submit]\').removeAttr("disabled");}}</script>' . "\n";
 	// ここまで　Google reCAPTCHAスクリプト
-	$result_form .= '<p><input type="submit" value="'.$_pkwkmail_msg['button'].'" name="submit" disabled /></p>'."\n";
+	$result_form .= '<p><span class="pkwkmail"><input type="submit" value="'.$_pkwkmail_msg['button'].'" name="submit" class="pkwkmail" disabled /></span></p>'."\n";
 	$result_form .= '</form>'."\n";
 
 	return $result_form;
@@ -465,7 +468,7 @@ function PKWKMAIL_confirm( $attr )
 
 	// generate $digest - ダイジェストの生成
 	$digest = md5(join('', get_source($vars['page'])));
-	$s_digest = htmlspecialchars($digest,ENT_QUOTES);
+	$s_digest = htmlsc($digest,ENT_QUOTES);
 
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		//correct amount num of values - 送信された総数の確認
@@ -483,7 +486,7 @@ function PKWKMAIL_confirm( $attr )
 				//set value and sanitize: checkbox - チェックボックスの場合
 				foreach($value as $v_key => $v_arr){
 					if(get_magic_quotes_gpc())$v_arr = stripslashes($v_arr);
-					$v_arr = htmlspecialchars($v_arr, ENT_QUOTES);
+					$v_arr = htmlsc($v_arr, ENT_QUOTES);
 					$value_arr[] = $v_arr;
 					//preparing send data - 送信用データ準備
 					$send_value[$key][] = $v_arr;
@@ -491,7 +494,7 @@ function PKWKMAIL_confirm( $attr )
 			}else{
 				//set value and sanitize: non checkbox - 非チェックボックス
 				if(get_magic_quotes_gpc())$value = stripslashes($value);
-				$value = htmlspecialchars($value, ENT_QUOTES);
+				$value = htmlsc($value, ENT_QUOTES);
 				//preparing send data - 送信用データ準備
 				if( strpos($key,'_email') ) $send_email_value = $value ;
 				$send_value[$key] = $value;
@@ -547,10 +550,10 @@ function PKWKMAIL_confirm( $attr )
 		$result_cnfm .= '<input name="digest" type="hidden" value="'.$s_digest.'" />'."\n";
 		$result_cnfm .= '<input type="hidden" name="mail_adrs" value="'.$send_email_value.'" />'."\n";
 		$result_cnfm .= '<input name="cnfm_snd" type="hidden" value="1" />'."\n";
-		$result_cnfm .= '<input type="submit" value="'.$_pkwkmail_msg['button_send'].'" name="submit" /></p>'."\n";
+		$result_cnfm .= '<span class="pkwkmail"><input type="submit" value="'.$_pkwkmail_msg['button_send'].'" name="submit" /></span></p>'."\n";
 		$result_cnfm .= '</form>'."\n";
 		$result_cnfm .= $attr['confirm_message_fromtitle'];
-		$vars['page'] = $attr['confirm_message_title'].' - '.htmlspecialchars( $vars['page'],ENT_QUOTES );//遷移画面のh1
+		$vars['page'] = strip_htmltag( $attr['confirm_message_title'] ).' - '.htmlsc( $vars['page'],ENT_QUOTES );//遷移画面のh1
 
 		return $result_cnfm;
 	}else{
@@ -558,7 +561,7 @@ function PKWKMAIL_confirm( $attr )
 		$result_cnfm .= '<ul>'."\n";
 		$result_cnfm .= $render_err;
 		$result_cnfm .= '</ul>'."\n";
-		$vars['page'] = $attr['confirm_message_yet_title'].' - '.htmlspecialchars( $vars['page'],ENT_QUOTES );//遷移画面のh1
+		$vars['page'] = $attr['confirm_message_yet_title'].' - '.htmlsc( $vars['page'],ENT_QUOTES );//遷移画面のh1
 
 		return $result_cnfm;
 	}
@@ -570,15 +573,15 @@ function PKWKMAIL_sent($attr)
 
 	// digest check - 新規生成するダイジェストとPOST値比較
 	$digest = md5(join('', get_source($vars['page'])));
-	$s_digest = htmlspecialchars($digest,ENT_QUOTES);
+	$s_digest = htmlsc($digest,ENT_QUOTES);
 	if($vars['digest'] != $s_digest) die_message('Invalid digest.');
 
 	$mail_content = array();
 
 	//formatting values: do not open $vars by foreach - POST値等から変数生成
-	$mail_content['sendmeacopy']    = isset( $vars['sendmeacopy'] ) ? htmlspecialchars($vars['sendmeacopy'],ENT_QUOTES) : NULL ;
-	$mail_content['mail_data']      = htmlspecialchars($vars['mail_data'],ENT_QUOTES);
-	$mail_content['mail_adrs']      = htmlspecialchars($vars['mail_adrs'],ENT_QUOTES);
+	$mail_content['sendmeacopy']    = isset( $vars['sendmeacopy'] ) ? htmlsc($vars['sendmeacopy'],ENT_QUOTES) : NULL ;
+	$mail_content['mail_data']      = htmlsc($vars['mail_data'],ENT_QUOTES);
+	$mail_content['mail_adrs']      = htmlsc($vars['mail_adrs'],ENT_QUOTES);
 	$mail_content['admin_adrs']     = $attr['admin_adrs'];
 	$mail_content['admin_reply_to'] = ! empty( $attr['admin_reply_to'] ) ? $attr['admin_reply_to'] : $mail_content['mail_adrs'];
 
@@ -598,8 +601,9 @@ function PKWKMAIL_sent($attr)
 	}
 
 	//preparing sending data - 送信データ準備
-	$mail_content['mail_data'] = str_replace("\t",': ',$mail_content['mail_data']);
-	$mail_content['mail_data'] = str_replace('PKWKMAIL_LATER_RETRUN',"\n",$mail_content['mail_data']);
+	$mail_content['mail_data'] = '■'. str_replace("\t",'：'."\n", $mail_content['mail_data']);
+	$mail_content['mail_data'] = str_replace('PKWKMAIL_LATER_RETRUN',"\n\n■",$mail_content['mail_data']);
+	$mail_content['mail_data'] = mb_substr($mail_content['mail_data'], 0, mb_strlen($mail_content['mail_data']) -1);
 
 	//formatting madrs: return address - Choose one from plural Address
 	// メール投稿者宛に送信する際に、管理者アドレスが複数登録されていた場合 From: ヘッダーに複数人登場するため、管理者アドレスを先頭１名にする
@@ -618,7 +622,7 @@ function PKWKMAIL_sent($attr)
 	$mail_to_admin = array();
 
 	//admin side - 管理者への送信内容
-	$mail_to_admin = $mail_content['mail_data']."\n\n";
+	$mail_to_admin = $mail_content['mail_data'];
 	$mail_to_admin = PKWKMAIL_mailformat($mail_to_admin);
 	$mail_to_admin .= '-- '."\n";
 	if($mail_content['sendmeacopy'] == 1) {
@@ -642,7 +646,7 @@ function PKWKMAIL_sent($attr)
 
 	//client side - クライアント側への送信内容
 	$mail_to_client = $attr['reply_message']."\n\n";
-	$mail_to_client .= $mail_content['mail_data']."\n\n";
+	$mail_to_client .= $mail_content['mail_data'];
 	$mail_to_client .= $attr['reply_message_foot']."\n\n";
 	$mail_to_client .= '-- '."\n";
 	// 署名が設定されている場合
@@ -672,7 +676,7 @@ function PKWKMAIL_sent($attr)
 	}
 
 	//rendering - 送信結果画面
-	$vars['page'] = $attr['finish_message_title'].' - '.htmlspecialchars( $vars['page'],ENT_QUOTES );
+	$vars['page'] = $attr['finish_message_title'].' - '.htmlsc( $vars['page'],ENT_QUOTES );
 	$result_finish ='';
 	if(!$send_err_admin && !$send_err_client) {
 		$result_finish = $attr['finish_message'];
